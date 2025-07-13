@@ -14,7 +14,7 @@ window.submissionPassword = "kh2studiosstaffpanellaptop";
 function showLogin(errorMsg = "") {
     const container = document.getElementById('main-container');
     container.innerHTML = `
-        <h2>Login Panel</h2>
+        <h2>Panel Login</h2>
         <form id="login-form">
             <label for="login-user">Username:</label>
             <input type="text" id="login-user" required autocomplete="username">

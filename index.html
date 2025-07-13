@@ -1,13 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Owner & Admin Panel + Submission Form</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Studio/Owner/Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; }
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+      gap: 8px;
+    }
+    .tab-btn {
+      background: #118cff;
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      padding: 10px 32px;
+      font-size: 17px;
+      cursor: pointer;
+      outline: none;
+      margin-bottom: -2px;
+    }
+    .tab-btn.active { background: #0366d6; }
+    .panel-box {
+      max-width: 440px;
+      margin: 0 auto;
+      margin-top: 0px;
+      background: #fff;
+      padding: 36px 36px 32px 36px;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      min-height: 270px;
+    }
+    h2 { text-align: center; margin-top: 0; }
+    label { display: block; margin: 16px 0 4px; font-weight: bold; }
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%; padding: 10px; margin-bottom: 16px; box-sizing: border-box;
+      border-radius: 5px; border: 1px solid #d0d0d0;
+    }
+    button[type="submit"], .logout-btn {
+      width: 130px; padding: 10px; background: #118cff; color: #fff; border: none;
+      border-radius: 6px; font-size: 16px; cursor: pointer; margin: 10px 0;
+    }
+    button[type="submit"]:hover, .logout-btn:hover { background: #0366d6; }
+    .info-block { background: #f2f6fa; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
+    .success { color: #2ecc40; }
+    .error { color: #ff5252; }
+    .login-form { max-width: 400px; margin: 0 auto; }
+    .credentials-list { margin: 12px 0 0 0; font-size: 15px; }
+    .credentials-list li { margin-bottom: 4px; }
+    .panel-title { font-weight: bold; margin-bottom: 8px; }
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
-    <div class="container" id="main-container"></div>
-    <script src="login.js"></script>
-    <script src="panel.js"></script>
+  <div class="tab-bar">
+    <button id="studioTab" class="tab-btn active">Studio Form</button>
+    <button id="ownerTab" class="tab-btn">Owner Panel</button>
+    <button id="adminTab" class="tab-btn">Admin Panel</button>
+  </div>
+  <div id="content" class="panel-box"></div>
+
+  <script>
+    // Hardcoded accounts
+    const ownerAccounts = [
+      { username: "KH2", password: "310764921199" }
+    ];
+    const adminAccounts = [
+      { username: "OKI3", password: "965356901928" },
+      { username: "Roquailian", password: "198654848648" }
+    ];
+    const studioEmail = "kyson3713@gmail.com";
+    const studioPassword = "kh2studiosstaffpanellaptop";
+
+    // State
+    let loggedInOwner = null;
+    let loggedInAdmin = null;
+
+    // Tab switching
+    const content = document.getElementById('content');
+    document.getElementById('studioTab').onclick = () => { showTab('studio'); };
+    document.getElementById('ownerTab').onclick = () => { showTab('owner'); };
+    document.getElementById('adminTab').onclick = () => { showTab('admin'); };
+
+    function showTab(tab) {
+      document.getElementById('studioTab').classList.remove('active');
+      document.getElementById('ownerTab').classList.remove('active');
+      document.getElementById('adminTab').classList.remove('active');
+      document.getElementById(tab + 'Tab').classList.add('active');
+      if (tab === 'studio') showStudioForm();
+      if (tab === 'owner') showOwnerPanel();
+      if (tab === 'admin') showAdminPanel();
+    }
+
+    // Studio Form (always visible, no login required)
+    function showStudioForm() {
+      content.innerHTML = `
+        <h2>Studio Form</h2>
+        <form action="https://formsubmit.co/kyson3713@gmail.com" method="POST" autocomplete="off">
+          <label for="studio-name">Name:</label>
+          <input type="text" name="name" id="studio-name" required>
+          <label for="studio-email">Email:</label>
+          <input type="email" name="email" id="studio-email" required>
+          <button type="submit">Send</button>
+        </form>
+      `;
+    }
+
+    // Owner Panel
+    function showOwnerPanel() {
+      if (!loggedInOwner) {
+        content.innerHTML = `
+          <h2>Owner Panel Login</h2>
+          <form class="login-form" id="owner-login-form" autocomplete="off">
+            <label for="owner-user">Username:</label>
+            <input type="text" id="owner-user" required autocomplete="username">
+            <label for="owner-pass">Password:</label>
+            <input type="password" id="owner-pass" required autocomplete="current-password">
+            <button type="submit">Login</button>
+            <div id="owner-login-error" class="error"></div>
+          </form>
+        `;
+        document.getElementById('owner-login-form').onsubmit = function(e) {
+          e.preventDefault();
+          const user = document.getElementById('owner-user').value.trim();
+          const pass = document.getElementById('owner-pass').value;
+          const found = ownerAccounts.find(a => a.username === user && a.password === pass);
+          if (found) {
+            loggedInOwner = found;
+            showOwnerPanel();
+          } else {
+            document.getElementById('owner-login-error').textContent = "Invalid credentials.";
+          }
+        };
+        return;
+      }
+      // After login:
+      content.innerHTML = `
+        <h2>Owner Panel</h2>
+        <div class="info-block">
+          <div><b>Email:</b> ${studioEmail}</div>
+          <div><b>Password:</b> ${studioPassword}</div>
+        </div>
+        <div class="panel-title">Current Owners</div>
+        <ul class="credentials-list" id="owner-list"></ul>
+        <div class="panel-title">Current Admins</div>
+        <ul class="credentials-list" id="admin-list"></ul>
+        <div style="margin-top:18px;">
+          <button class="logout-btn" onclick="logoutOwner()">Log out</button>
+        </div>
+      `;
+      // Populate owner/admin lists
+      document.getElementById('owner-list').innerHTML = ownerAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+      document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+    }
+    window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
+
+    // Admin Panel
+    function showAdminPanel() {
+      if (!loggedInAdmin) {
+        content.innerHTML = `
+          <h2>Admin Panel Login</h2>
+          <form class="login-form" id="admin-login-form" autocomplete="off">
+            <label for="admin-user">Username:</label>
+            <input type="text" id="admin-user" required autocomplete="username">
+            <label for="admin-pass">Password:</label>
+            <input type="password" id="admin-pass" required autocomplete="current-password">
+            <button type="submit">Login</button>
+            <div id="admin-login-error" class="error"></div>
+          </form>
+        `;
+        document.getElementById('admin-login-form').onsubmit = function(e) {
+          e.preventDefault();
+          const user = document.getElementById('admin-user').value.trim();
+          const pass = document.getElementById('admin-pass').value;
+          const found = adminAccounts.find(a => a.username === user && a.password === pass);
+          if (found) {
+            loggedInAdmin = found;
+            showAdminPanel();
+          } else {
+            document.getElementById('admin-login-error').textContent = "Invalid credentials.";
+          }
+        };
+        return;
+      }
+      // After login:
+      content.innerHTML = `
+        <h2>Admin Panel</h2>
+        <div class="info-block">
+          <div><b>Email:</b> ${studioEmail}</div>
+          <div><b>Password:</b> ${studioPassword}</div>
+        </div>
+        <div class="panel-title">Current Admins</div>
+        <ul class="credentials-list" id="admin-list"></ul>
+        <div style="margin-top:18px;">
+          <button class="logout-btn" onclick="logoutAdmin()">Log out</button>
+        </div>
+      `;
+      document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+    }
+    window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
+
+    // Start on Studio Form tab
+    showStudioForm();
+  </script>
 </body>
 </html>
