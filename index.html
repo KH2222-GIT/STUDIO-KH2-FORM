@@ -21,6 +21,7 @@
       cursor: pointer;
       outline: none;
       margin-bottom: -2px;
+      transition: background 0.2s;
     }
     .tab-btn.active { background: #0366d6; }
     .panel-box {
@@ -64,7 +65,7 @@
   <div id="content" class="panel-box"></div>
 
   <script>
-    // Hardcoded accounts
+    // Hardcoded accounts for demo
     const ownerAccounts = [
       { username: "KH2", password: "310764921199" }
     ];
@@ -79,12 +80,11 @@
     const studioEmail = "kyson3713@gmail.com";
     const studioPassword = "kh2studiosstaffpanellaptop";
 
-    // State
     let loggedInOwner = null;
     let loggedInAdmin = null;
     let loggedInStaff = null;
 
-    // Tab switching
+    // TAB HANDLING
     const content = document.getElementById('content');
     document.getElementById('studioTab').onclick = () => { showTab('studio'); };
     document.getElementById('ownerTab').onclick = () => { showTab('owner'); };
@@ -103,7 +103,7 @@
       if (tab === 'staff') showStaffPanel();
     }
 
-    // Studio Form (anyone can submit)
+    // STUDIO FORM (EVERYONE CAN SEE)
     function showStudioForm() {
       content.innerHTML = `
         <h2>Studio Form</h2>
@@ -117,16 +117,16 @@
       `;
     }
 
-    // Owner Panel
+    // OWNER PANEL
     function showOwnerPanel() {
       if (!loggedInOwner) {
         content.innerHTML = `
           <h2>Owner Panel Login</h2>
           <form class="login-form" id="owner-login-form" autocomplete="off">
             <label for="owner-user">Username:</label>
-            <input type="text" id="owner-user" required autocomplete="username">
+            <input type="text" id="owner-user" required autocomplete="off">
             <label for="owner-pass">Password:</label>
-            <input type="password" id="owner-pass" required autocomplete="current-password">
+            <input type="password" id="owner-pass" required autocomplete="off">
             <button type="submit">Login</button>
             <div id="owner-login-error" class="error"></div>
           </form>
@@ -168,16 +168,16 @@
     }
     window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
 
-    // Admin Panel
+    // ADMIN PANEL
     function showAdminPanel() {
       if (!loggedInAdmin) {
         content.innerHTML = `
           <h2>Admin Panel Login</h2>
           <form class="login-form" id="admin-login-form" autocomplete="off">
             <label for="admin-user">Username:</label>
-            <input type="text" id="admin-user" required autocomplete="username">
+            <input type="text" id="admin-user" required autocomplete="off">
             <label for="admin-pass">Password:</label>
-            <input type="password" id="admin-pass" required autocomplete="current-password">
+            <input type="password" id="admin-pass" required autocomplete="off">
             <button type="submit">Login</button>
             <div id="admin-login-error" class="error"></div>
           </form>
@@ -213,16 +213,16 @@
     }
     window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
 
-    // Staff Panel
+    // STAFF PANEL
     function showStaffPanel() {
       if (!loggedInStaff) {
         content.innerHTML = `
           <h2>Staff Panel Login</h2>
           <form class="login-form" id="staff-login-form" autocomplete="off">
             <label for="staff-user">Username:</label>
-            <input type="text" id="staff-user" required autocomplete="username">
+            <input type="text" id="staff-user" required autocomplete="off">
             <label for="staff-pass">Password:</label>
-            <input type="password" id="staff-pass" required autocomplete="current-password">
+            <input type="password" id="staff-pass" required autocomplete="off">
             <button type="submit">Login</button>
             <div id="staff-login-error" class="error"></div>
           </form>
