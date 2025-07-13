@@ -25,7 +25,7 @@
     }
     .tab-btn.active { background: #0366d6; }
     .panel-box {
-      max-width: 440px;
+      max-width: 500px;
       margin: 0 auto;
       margin-top: 0px;
       background: #fff;
@@ -36,19 +36,20 @@
     }
     h2 { text-align: center; margin-top: 0; }
     label { display: block; margin: 16px 0 4px; font-weight: bold; }
-    input[type="text"], input[type="password"], input[type="email"] {
+    input[type="text"], input[type="password"], input[type="email"], textarea, select {
       width: 100%; padding: 10px; margin-bottom: 16px; box-sizing: border-box;
       border-radius: 5px; border: 1px solid #d0d0d0;
     }
-    button[type="submit"], .logout-btn, .delete-btn, .delete-account-btn {
+    button[type="submit"], .logout-btn, .delete-btn, .add-btn {
       padding: 10px 18px; background: #118cff; color: #fff; border: none;
       border-radius: 6px; font-size: 16px; cursor: pointer; margin: 10px 2px 0 0;
       display: inline-block;
     }
-    button[type="submit"]:hover, .logout-btn:hover, .delete-btn:hover, .delete-account-btn:hover { background: #0366d6; }
+    button[type="submit"]:hover, .logout-btn:hover, .delete-btn:hover, .add-btn:hover { background: #0366d6; }
     .delete-btn { background: #ff5252; }
-    .delete-btn:hover, .delete-account-btn:hover { background: #e11b1b; }
-    .delete-account-btn { background: #ff5252; }
+    .delete-btn:hover { background: #e11b1b; }
+    .add-btn { background: #2ecc40; }
+    .add-btn:hover { background: #219a28; }
     .info-block { background: #f2f6fa; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
     .success { color: #2ecc40; }
     .error { color: #ff5252; }
@@ -57,6 +58,12 @@
     .credentials-list li { margin-bottom: 4px; }
     .panel-title { font-weight: bold; margin-bottom: 8px; }
     .hidden { display: none; }
+    .required {
+      color: #ff5252;
+      font-size: 14px;
+      margin-left: 2px;
+    }
+    .add-form-block { background: #f7fcf4; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
   </style>
 </head>
 <body>
@@ -67,9 +74,8 @@
     <button id="staffTab" class="tab-btn">Staff Panel</button>
   </div>
   <div id="content" class="panel-box"></div>
-
   <script>
-    // Hardcoded accounts for demo
+    // Initial accounts
     let ownerAccounts = [
       { username: "KH2", password: "310764921199" }
     ];
@@ -112,10 +118,27 @@
       content.innerHTML = `
         <h2>Studio Form</h2>
         <form action="https://formsubmit.co/kyson3713@gmail.com" method="POST" autocomplete="off">
-          <label for="studio-name">Name:</label>
-          <input type="text" name="name" id="studio-name" required>
-          <label for="studio-email">Email:</label>
-          <input type="email" name="email" id="studio-email" required>
+          <label for="q1">1. What should we call you?<span class="required">*</span></label>
+          <input type="text" name="What should we call you?" id="q1" required>
+          <label for="q2">2. Whats your email?<span class="required">*</span></label>
+          <input type="email" name="Whats your email?" id="q2" required>
+          <label for="q3">3. Whats your age?</label>
+          <input type="text" name="Whats your age?" id="q3">
+          <label for="q4">4. Share your project here. (if you have one)</label>
+          <textarea name="Share your project here" id="q4"></textarea>
+          <label for="q5">5. Do you have experience?<span class="required">*</span></label>
+          <select name="Do you have experience?" id="q5" required>
+            <option value="">-- Select --</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="A little">A little</option>
+          </select>
+          <label for="q6">6. What would you like to to work for?<span class="required">*</span></label>
+          <input type="text" name="What would you like to to work for?" id="q6" required>
+          <label for="q7">7. What are you best doing at?<span class="required">*</span></label>
+          <input type="text" name="What are you best doing at?" id="q7" required>
+          <label for="q8">8. What is your timezone?<span class="required">*</span></label>
+          <input type="text" name="What is your timezone?" id="q8" required>
           <button type="submit">Send</button>
         </form>
       `;
@@ -155,57 +178,85 @@
           <div><b>Email:</b> ${studioEmail}</div>
           <div><b>Password:</b> ${studioPassword}</div>
         </div>
-        <div class="panel-title">Current Owners</div>
+        <div class="panel-title">Owner Accounts</div>
         <ul class="credentials-list" id="owner-list"></ul>
-        <div class="panel-title">Current Admins</div>
+        <div class="add-form-block">
+          <form id="add-owner-form">
+            <label>Add Owner:</label>
+            <input type="text" id="new-owner-user" placeholder="Username" required>
+            <input type="password" id="new-owner-pass" placeholder="Password" required>
+            <button type="submit" class="add-btn">Add Owner</button>
+            <span class="error" id="owner-add-err"></span>
+          </form>
+        </div>
+        <div class="panel-title">Admin Accounts</div>
         <ul class="credentials-list" id="admin-list"></ul>
-        <div class="panel-title">Current Staff</div>
+        <div class="add-form-block">
+          <form id="add-admin-form">
+            <label>Add Admin:</label>
+            <input type="text" id="new-admin-user" placeholder="Username" required>
+            <input type="password" id="new-admin-pass" placeholder="Password" required>
+            <button type="submit" class="add-btn">Add Admin</button>
+            <span class="error" id="admin-add-err"></span>
+          </form>
+        </div>
+        <div class="panel-title">Staff Accounts</div>
         <ul class="credentials-list" id="staff-list"></ul>
+        <div class="add-form-block">
+          <form id="add-staff-form">
+            <label>Add Staff:</label>
+            <input type="text" id="new-staff-user" placeholder="Username" required>
+            <input type="password" id="new-staff-pass" placeholder="Password" required>
+            <button type="submit" class="add-btn">Add Staff</button>
+            <span class="error" id="staff-add-err"></span>
+          </form>
+        </div>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutOwner()">Log out</button>
-          <button class="delete-account-btn" onclick="deleteOwnerAccount()">Delete Account</button>
         </div>
       `;
-      document.getElementById('owner-list').innerHTML = ownerAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
-      renderAdminListWithDelete();
-      document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
-    }
+      renderListWithDelete("owner-list", ownerAccounts, "owner", true);
+      renderListWithDelete("admin-list", adminAccounts, "admin", true);
+      renderListWithDelete("staff-list", staffAccounts, "staff", true);
 
-    function renderAdminListWithDelete() {
-      const adminList = document.getElementById('admin-list');
-      if (!adminList) return;
-      if (adminAccounts.length === 0) {
-        adminList.innerHTML = "<li>No admins left.</li>";
-        return;
-      }
-      adminList.innerHTML = '';
-      adminAccounts.forEach((a, i) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          ${a.username} / ${a.password}
-          <button class="delete-btn" onclick="deleteAdmin(${i})" title="Delete Admin ${a.username}">Delete</button>
-        `;
-        adminList.appendChild(li);
-      });
-    }
-
-    window.deleteAdmin = function(idx) {
-      if(confirm(`Are you sure you want to delete admin account "${adminAccounts[idx].username}"?`)) {
-        adminAccounts.splice(idx, 1);
+      // Add account forms
+      document.getElementById('add-owner-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('new-owner-user').value.trim();
+        const pass = document.getElementById('new-owner-pass').value;
+        if (ownerAccounts.find(a => a.username === user)) {
+          document.getElementById('owner-add-err').textContent = "Username already exists!";
+          return;
+        }
+        ownerAccounts.push({ username: user, password: pass });
+        document.getElementById('owner-add-err').textContent = "";
         showOwnerPanel();
-      }
-    };
-
-    window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
-
-    window.deleteOwnerAccount = function() {
-      if (!loggedInOwner) return;
-      if(confirm(`Are you sure you want to delete your owner account "${loggedInOwner.username}"? This cannot be undone unless you reload the page.`)) {
-        ownerAccounts = ownerAccounts.filter(a => !(a.username === loggedInOwner.username && a.password === loggedInOwner.password));
-        loggedInOwner = null;
+      };
+      document.getElementById('add-admin-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('new-admin-user').value.trim();
+        const pass = document.getElementById('new-admin-pass').value;
+        if (adminAccounts.find(a => a.username === user)) {
+          document.getElementById('admin-add-err').textContent = "Username already exists!";
+          return;
+        }
+        adminAccounts.push({ username: user, password: pass });
+        document.getElementById('admin-add-err').textContent = "";
         showOwnerPanel();
-      }
-    };
+      };
+      document.getElementById('add-staff-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('new-staff-user').value.trim();
+        const pass = document.getElementById('new-staff-pass').value;
+        if (staffAccounts.find(a => a.username === user)) {
+          document.getElementById('staff-add-err').textContent = "Username already exists!";
+          return;
+        }
+        staffAccounts.push({ username: user, password: pass });
+        document.getElementById('staff-add-err').textContent = "";
+        showOwnerPanel();
+      };
+    }
 
     // ADMIN PANEL
     function showAdminPanel() {
@@ -241,24 +292,61 @@
           <div><b>Email:</b> ${studioEmail}</div>
           <div><b>Password:</b> ${studioPassword}</div>
         </div>
-        <div class="panel-title">Current Admins</div>
+        <div class="panel-title">Admin Accounts</div>
         <ul class="credentials-list" id="admin-list"></ul>
+        <div class="add-form-block">
+          <form id="add-admin-form">
+            <label>Add Admin:</label>
+            <input type="text" id="new-admin-user" placeholder="Username" required>
+            <input type="password" id="new-admin-pass" placeholder="Password" required>
+            <button type="submit" class="add-btn">Add Admin</button>
+            <span class="error" id="admin-add-err"></span>
+          </form>
+        </div>
+        <div class="panel-title">Staff Accounts</div>
+        <ul class="credentials-list" id="staff-list"></ul>
+        <div class="add-form-block">
+          <form id="add-staff-form">
+            <label>Add Staff:</label>
+            <input type="text" id="new-staff-user" placeholder="Username" required>
+            <input type="password" id="new-staff-pass" placeholder="Password" required>
+            <button type="submit" class="add-btn">Add Staff</button>
+            <span class="error" id="staff-add-err"></span>
+          </form>
+        </div>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutAdmin()">Log out</button>
-          <button class="delete-account-btn" onclick="deleteAdminAccount()">Delete Account</button>
         </div>
       `;
-      document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
-    }
-    window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
-    window.deleteAdminAccount = function() {
-      if (!loggedInAdmin) return;
-      if(confirm(`Are you sure you want to delete your admin account "${loggedInAdmin.username}"? This cannot be undone unless you reload the page.`)) {
-        adminAccounts = adminAccounts.filter(a => !(a.username === loggedInAdmin.username && a.password === loggedInAdmin.password));
-        loggedInAdmin = null;
+      renderListWithDelete("admin-list", adminAccounts, "admin", false);
+      renderListWithDelete("staff-list", staffAccounts, "staff", false);
+
+      // Add account forms (admin can add admin and staff)
+      document.getElementById('add-admin-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('new-admin-user').value.trim();
+        const pass = document.getElementById('new-admin-pass').value;
+        if (adminAccounts.find(a => a.username === user)) {
+          document.getElementById('admin-add-err').textContent = "Username already exists!";
+          return;
+        }
+        adminAccounts.push({ username: user, password: pass });
+        document.getElementById('admin-add-err').textContent = "";
         showAdminPanel();
-      }
-    };
+      };
+      document.getElementById('add-staff-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('new-staff-user').value.trim();
+        const pass = document.getElementById('new-staff-pass').value;
+        if (staffAccounts.find(a => a.username === user)) {
+          document.getElementById('staff-add-err').textContent = "Username already exists!";
+          return;
+        }
+        staffAccounts.push({ username: user, password: pass });
+        document.getElementById('staff-add-err').textContent = "";
+        showAdminPanel();
+      };
+    }
 
     // STAFF PANEL
     function showStaffPanel() {
@@ -294,24 +382,53 @@
           <div><b>Email:</b> ${studioEmail}</div>
           <div><b>Password:</b> ${studioPassword}</div>
         </div>
-        <div class="panel-title">Current Staff</div>
+        <div class="panel-title">Staff Accounts</div>
         <ul class="credentials-list" id="staff-list"></ul>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutStaff()">Log out</button>
-          <button class="delete-account-btn" onclick="deleteStaffAccount()">Delete Account</button>
         </div>
       `;
-      document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+      renderListWithDelete("staff-list", staffAccounts, "staff", false);
     }
-    window.logoutStaff = function() { loggedInStaff = null; showStaffPanel(); };
-    window.deleteStaffAccount = function() {
-      if (!loggedInStaff) return;
-      if(confirm(`Are you sure you want to delete your staff account "${loggedInStaff.username}"? This cannot be undone unless you reload the page.`)) {
-        staffAccounts = staffAccounts.filter(a => !(a.username === loggedInStaff.username && a.password === loggedInStaff.password));
-        loggedInStaff = null;
-        showStaffPanel();
+
+    // RENDER ACCOUNT LISTS WITH OPTIONAL DELETE (only if isOwner)
+    function renderListWithDelete(listId, arr, type, isOwner) {
+      const list = document.getElementById(listId);
+      if (!list) return;
+      if (arr.length === 0) {
+        list.innerHTML = "<li>None</li>";
+        return;
+      }
+      list.innerHTML = '';
+      arr.forEach((a, i) => {
+        const li = document.createElement('li');
+        let html = `${a.username} / ${a.password}`;
+        if (isOwner) {
+          html += ` <button class="delete-btn" onclick="deleteAccount('${type}',${i})" title="Delete ${type} ${a.username}">Delete</button>`;
+        }
+        li.innerHTML = html;
+        list.appendChild(li);
+      });
+    }
+
+    // Delete account (only for owner)
+    window.deleteAccount = function(type, idx) {
+      if (!loggedInOwner) return;
+      let arr, name;
+      if (type === "owner") { arr = ownerAccounts; name = "owner"; }
+      if (type === "admin") { arr = adminAccounts; name = "admin"; }
+      if (type === "staff") { arr = staffAccounts; name = "staff"; }
+      if (!arr) return;
+      if(confirm(`Are you sure you want to delete ${name} account "${arr[idx].username}"?`)) {
+        arr.splice(idx, 1);
+        showOwnerPanel();
       }
     };
+
+    // Logout
+    window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
+    window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
+    window.logoutStaff = function() { loggedInStaff = null; showStaffPanel(); };
 
     // Start on Studio Form tab
     showStudioForm();
