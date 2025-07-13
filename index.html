@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Studio/Owner/Admin Panel</title>
+  <title>Studio/Owner/Admin/Staff Panel</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f5f5f5; }
     .tab-bar {
@@ -59,6 +59,7 @@
     <button id="studioTab" class="tab-btn active">Studio Form</button>
     <button id="ownerTab" class="tab-btn">Owner Panel</button>
     <button id="adminTab" class="tab-btn">Admin Panel</button>
+    <button id="staffTab" class="tab-btn">Staff Panel</button>
   </div>
   <div id="content" class="panel-box"></div>
 
@@ -71,30 +72,38 @@
       { username: "OKI3", password: "965356901928" },
       { username: "Roquailian", password: "198654848648" }
     ];
+    const staffAccounts = [
+      { username: "Staff1", password: "staffpw1" },
+      { username: "Staff2", password: "staffpw2" }
+    ];
     const studioEmail = "kyson3713@gmail.com";
     const studioPassword = "kh2studiosstaffpanellaptop";
 
     // State
     let loggedInOwner = null;
     let loggedInAdmin = null;
+    let loggedInStaff = null;
 
     // Tab switching
     const content = document.getElementById('content');
     document.getElementById('studioTab').onclick = () => { showTab('studio'); };
     document.getElementById('ownerTab').onclick = () => { showTab('owner'); };
     document.getElementById('adminTab').onclick = () => { showTab('admin'); };
+    document.getElementById('staffTab').onclick = () => { showTab('staff'); };
 
     function showTab(tab) {
       document.getElementById('studioTab').classList.remove('active');
       document.getElementById('ownerTab').classList.remove('active');
       document.getElementById('adminTab').classList.remove('active');
+      document.getElementById('staffTab').classList.remove('active');
       document.getElementById(tab + 'Tab').classList.add('active');
       if (tab === 'studio') showStudioForm();
       if (tab === 'owner') showOwnerPanel();
       if (tab === 'admin') showAdminPanel();
+      if (tab === 'staff') showStaffPanel();
     }
 
-    // Studio Form (always visible, no login required)
+    // Studio Form (anyone can submit)
     function showStudioForm() {
       content.innerHTML = `
         <h2>Studio Form</h2>
@@ -147,13 +156,15 @@
         <ul class="credentials-list" id="owner-list"></ul>
         <div class="panel-title">Current Admins</div>
         <ul class="credentials-list" id="admin-list"></ul>
+        <div class="panel-title">Current Staff</div>
+        <ul class="credentials-list" id="staff-list"></ul>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutOwner()">Log out</button>
         </div>
       `;
-      // Populate owner/admin lists
       document.getElementById('owner-list').innerHTML = ownerAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
       document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+      document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
     }
     window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
 
@@ -201,6 +212,51 @@
       document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
     }
     window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
+
+    // Staff Panel
+    function showStaffPanel() {
+      if (!loggedInStaff) {
+        content.innerHTML = `
+          <h2>Staff Panel Login</h2>
+          <form class="login-form" id="staff-login-form" autocomplete="off">
+            <label for="staff-user">Username:</label>
+            <input type="text" id="staff-user" required autocomplete="username">
+            <label for="staff-pass">Password:</label>
+            <input type="password" id="staff-pass" required autocomplete="current-password">
+            <button type="submit">Login</button>
+            <div id="staff-login-error" class="error"></div>
+          </form>
+        `;
+        document.getElementById('staff-login-form').onsubmit = function(e) {
+          e.preventDefault();
+          const user = document.getElementById('staff-user').value.trim();
+          const pass = document.getElementById('staff-pass').value;
+          const found = staffAccounts.find(a => a.username === user && a.password === pass);
+          if (found) {
+            loggedInStaff = found;
+            showStaffPanel();
+          } else {
+            document.getElementById('staff-login-error').textContent = "Invalid credentials.";
+          }
+        };
+        return;
+      }
+      // After login:
+      content.innerHTML = `
+        <h2>Staff Panel</h2>
+        <div class="info-block">
+          <div><b>Email:</b> ${studioEmail}</div>
+          <div><b>Password:</b> ${studioPassword}</div>
+        </div>
+        <div class="panel-title">Current Staff</div>
+        <ul class="credentials-list" id="staff-list"></ul>
+        <div style="margin-top:18px;">
+          <button class="logout-btn" onclick="logoutStaff()">Log out</button>
+        </div>
+      `;
+      document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
+    }
+    window.logoutStaff = function() { loggedInStaff = null; showStaffPanel(); };
 
     // Start on Studio Form tab
     showStudioForm();
