@@ -24,29 +24,47 @@
       border-radius: 6px; font-size: 16px; cursor: pointer; margin: 10px 0;
     }
     button[type="submit"]:hover { background: #0366d6; }
+    .required {
+      color: #ff5252;
+      font-weight: normal;
+      font-size: 14px;
+      margin-left: 2px;
+    }
   </style>
 </head>
 <body>
   <div class="panel-box">
     <h2>Studio Form</h2>
     <form action="https://formsubmit.co/kyson3713@gmail.com" method="POST" autocomplete="off">
-      <label for="studio-name">Name:</label>
-      <input type="text" name="name" id="studio-name" required>
-
-      <label for="studio-email">Email:</label>
-      <input type="email" name="email" id="studio-email" required>
-
-      <label for="your-question">Your Question:</label>
-      <textarea name="question" id="your-question" required></textarea>
-
-      <label for="urgency">How urgent is this?</label>
-      <select name="urgency" id="urgency" required>
+      <label for="name">1. What should we call you?<span class="required">*</span></label>
+      <input type="text" name="What should we call you?" id="name" required>
+      
+      <label for="email">2. Whats your email?<span class="required">*</span></label>
+      <input type="email" name="Whats your email?" id="email" required>
+      
+      <label for="age">3. Whats your age?</label>
+      <input type="text" name="Whats your age?" id="age">
+      
+      <label for="project">4. Share your project here. (if you have one)</label>
+      <textarea name="Share your project here" id="project"></textarea>
+      
+      <label for="experience">5. Do you have experience?<span class="required">*</span></label>
+      <select name="Do you have experience?" id="experience" required>
         <option value="">-- Select --</option>
-        <option value="Very Urgent">Very Urgent</option>
-        <option value="Somewhat Urgent">Somewhat Urgent</option>
-        <option value="Not Urgent">Not Urgent</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+        <option value="A little">A little</option>
       </select>
-
+      
+      <label for="workfor">6. What would you like to to work for?<span class="required">*</span></label>
+      <input type="text" name="What would you like to to work for?" id="workfor" required>
+      
+      <label for="bestat">7. What are you best doing at?<span class="required">*</span></label>
+      <input type="text" name="What are you best doing at?" id="bestat" required>
+      
+      <label for="timezone">8. What is your timezone?<span class="required">*</span></label>
+      <input type="text" name="What is your timezone?" id="timezone" required>
+      
       <button type="submit">Send</button>
     </form>
   </div>
