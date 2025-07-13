@@ -40,14 +40,15 @@
       width: 100%; padding: 10px; margin-bottom: 16px; box-sizing: border-box;
       border-radius: 5px; border: 1px solid #d0d0d0;
     }
-    button[type="submit"], .logout-btn, .delete-btn {
+    button[type="submit"], .logout-btn, .delete-btn, .delete-account-btn {
       padding: 10px 18px; background: #118cff; color: #fff; border: none;
       border-radius: 6px; font-size: 16px; cursor: pointer; margin: 10px 2px 0 0;
       display: inline-block;
     }
-    button[type="submit"]:hover, .logout-btn:hover, .delete-btn:hover { background: #0366d6; }
+    button[type="submit"]:hover, .logout-btn:hover, .delete-btn:hover, .delete-account-btn:hover { background: #0366d6; }
     .delete-btn { background: #ff5252; }
-    .delete-btn:hover { background: #e11b1b; }
+    .delete-btn:hover, .delete-account-btn:hover { background: #e11b1b; }
+    .delete-account-btn { background: #ff5252; }
     .info-block { background: #f2f6fa; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
     .success { color: #2ecc40; }
     .error { color: #ff5252; }
@@ -69,14 +70,14 @@
 
   <script>
     // Hardcoded accounts for demo
-    const ownerAccounts = [
+    let ownerAccounts = [
       { username: "KH2", password: "310764921199" }
     ];
     let adminAccounts = [
       { username: "OKI3", password: "965356901928" },
       { username: "Staff", password: "986385001231" }
     ];
-    const staffAccounts = [
+    let staffAccounts = [
       { username: "Staff1", password: "staffpw1" },
       { username: "Staff2", password: "staffpw2" }
     ];
@@ -148,7 +149,6 @@
         };
         return;
       }
-      // After login:
       content.innerHTML = `
         <h2>Owner Panel</h2>
         <div class="info-block">
@@ -163,10 +163,10 @@
         <ul class="credentials-list" id="staff-list"></ul>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutOwner()">Log out</button>
+          <button class="delete-account-btn" onclick="deleteOwnerAccount()">Delete Account</button>
         </div>
       `;
       document.getElementById('owner-list').innerHTML = ownerAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
-      // Render admin list with delete buttons
       renderAdminListWithDelete();
       document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
     }
@@ -180,7 +180,6 @@
       }
       adminList.innerHTML = '';
       adminAccounts.forEach((a, i) => {
-        // Don't let owners delete themselves if they're also admins (not applicable here but safe)
         const li = document.createElement('li');
         li.innerHTML = `
           ${a.username} / ${a.password}
@@ -190,16 +189,23 @@
       });
     }
 
-    // Make deleteAdmin available globally
     window.deleteAdmin = function(idx) {
-      // Confirm before deleting
       if(confirm(`Are you sure you want to delete admin account "${adminAccounts[idx].username}"?`)) {
         adminAccounts.splice(idx, 1);
-        showOwnerPanel(); // Refresh panel
+        showOwnerPanel();
       }
     };
 
     window.logoutOwner = function() { loggedInOwner = null; showOwnerPanel(); };
+
+    window.deleteOwnerAccount = function() {
+      if (!loggedInOwner) return;
+      if(confirm(`Are you sure you want to delete your owner account "${loggedInOwner.username}"? This cannot be undone unless you reload the page.`)) {
+        ownerAccounts = ownerAccounts.filter(a => !(a.username === loggedInOwner.username && a.password === loggedInOwner.password));
+        loggedInOwner = null;
+        showOwnerPanel();
+      }
+    };
 
     // ADMIN PANEL
     function showAdminPanel() {
@@ -229,7 +235,6 @@
         };
         return;
       }
-      // After login:
       content.innerHTML = `
         <h2>Admin Panel</h2>
         <div class="info-block">
@@ -240,11 +245,20 @@
         <ul class="credentials-list" id="admin-list"></ul>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutAdmin()">Log out</button>
+          <button class="delete-account-btn" onclick="deleteAdminAccount()">Delete Account</button>
         </div>
       `;
       document.getElementById('admin-list').innerHTML = adminAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
     }
     window.logoutAdmin = function() { loggedInAdmin = null; showAdminPanel(); };
+    window.deleteAdminAccount = function() {
+      if (!loggedInAdmin) return;
+      if(confirm(`Are you sure you want to delete your admin account "${loggedInAdmin.username}"? This cannot be undone unless you reload the page.`)) {
+        adminAccounts = adminAccounts.filter(a => !(a.username === loggedInAdmin.username && a.password === loggedInAdmin.password));
+        loggedInAdmin = null;
+        showAdminPanel();
+      }
+    };
 
     // STAFF PANEL
     function showStaffPanel() {
@@ -274,7 +288,6 @@
         };
         return;
       }
-      // After login:
       content.innerHTML = `
         <h2>Staff Panel</h2>
         <div class="info-block">
@@ -285,11 +298,20 @@
         <ul class="credentials-list" id="staff-list"></ul>
         <div style="margin-top:18px;">
           <button class="logout-btn" onclick="logoutStaff()">Log out</button>
+          <button class="delete-account-btn" onclick="deleteStaffAccount()">Delete Account</button>
         </div>
       `;
       document.getElementById('staff-list').innerHTML = staffAccounts.map(a => `<li>${a.username} / ${a.password}</li>`).join('');
     }
     window.logoutStaff = function() { loggedInStaff = null; showStaffPanel(); };
+    window.deleteStaffAccount = function() {
+      if (!loggedInStaff) return;
+      if(confirm(`Are you sure you want to delete your staff account "${loggedInStaff.username}"? This cannot be undone unless you reload the page.`)) {
+        staffAccounts = staffAccounts.filter(a => !(a.username === loggedInStaff.username && a.password === loggedInStaff.password));
+        loggedInStaff = null;
+        showStaffPanel();
+      }
+    };
 
     // Start on Studio Form tab
     showStudioForm();

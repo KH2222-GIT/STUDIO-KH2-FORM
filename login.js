@@ -4,7 +4,7 @@ window.ownerAccounts = [
 ];
 window.adminAccounts = [
     { username: "OKI3", password: "965356901928" },
-    { username: "Staff", password: "986385001231" }
+    { username: "Roquailian", password: "198654848648" }
 ];
 
 // Credentials shown after login
